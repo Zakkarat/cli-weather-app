@@ -5,7 +5,7 @@ const main = async() => {
     const args = toFetchUnits(argsToObject());
     const data = await fetcher(args.l, args.units);
 
-    toConsoleCurr(data, args.r, args.units);
+    args.r === 'weather' ? toConsoleCurr(data, args.r) : toConsoleSpec(data, args.r);
     return data;
 }
 
@@ -38,5 +38,7 @@ const toConsoleCurr = (data, range) => {
     console.log(`Temperature: ${temp}`);
     console.log(`Wind speed: ${speed}`);
 }
+
+const toConsoleSpec = (data, range,)
 
 main();
