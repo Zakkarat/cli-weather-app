@@ -39,6 +39,8 @@ const toConsoleCurr = (data, range) => {
     console.log(`Wind speed: ${speed}`);
 }
 
-const toConsoleSpec = (data, range,)
+const toConsoleSpec = (data, range) => {
+    
+}
 
 main();
