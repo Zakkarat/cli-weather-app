@@ -7,18 +7,15 @@ const appIds = [
 const currents = ['today', 'current', 'curr']
 
 const fetcher = async(l = process.argv[2], units, range, {type} = appIds[0], {APPID} = appIds[0] ) => {
-    if(currents.some(elem => elem !== range)) {
+    if(!currents.some(elem => elem === range)) {
         type = appIds[1].type;
         APPID = appIds[1].APPID;
-    } else {
-        type = appIds[0].type;
     }
   return await axios(
     `https://api.openweathermap.org/data/2.5/${
       type
     }?q=${l}&units=${units}&APPID=${APPID}`
   ).then(response => {
-      console.log(response.data);
       return response.data;
   })
 }

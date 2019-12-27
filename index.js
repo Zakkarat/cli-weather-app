@@ -3,7 +3,7 @@ const celsium = ['c', 'celsium'];
 
 const main = async() => {
     const args = toFetchUnits(argsToObject());
-    const data = await fetcher(args.l, args.units);
+    const data = await fetcher(args.l, args.units, args.r);
 
     args.r === 'weather' ? toConsoleCurr(data, args.r) : toConsoleSpec(data, args.r);
     return data;
@@ -40,7 +40,7 @@ const toConsoleCurr = (data, range) => {
 }
 
 const toConsoleSpec = (data, range) => {
-    
+
 }
 
 main();
