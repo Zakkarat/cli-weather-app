@@ -1,17 +1,31 @@
 const fetcher = require("./dataFetcher");
 const { celsium, days, currents } = require("./dictionary.json");
-const {writeToHistory, readHistory} = require("./history");
+const { writeToHistory, readHistory } = require("./history");
+const { toggleFav, readFav } = require("./favourites");
+
 const main = async () => {
   const args = toFetchArgs(argsToObject());
-  console.log(args)
-  const data = await fetcher(args.l, args.units, args.r);
-  if(Object.keys(args).some(elem => elem === 'h')) {
-    readHistory();
+  const argsKeys = Object.keys(args);
+  const history = readHistory().toString();
+  if (argsKeys.includes("h")) {
+    console.log(history);
     return 0;
   }
-  data.list
-    ? toConsoleSpec(data, args.l)
-    : toConsoleCurr(data);
+  if (argsKeys.length === 2 && argsKeys.includes("f")) {
+    console.log(readFav().toString());
+    return 0;
+  }
+  if(!args.l) {
+    args.l = history.split('\n')[history.split('\n').length - 1];
+  }
+  const data = await fetcher(args.l, args.units, args.r);
+  data.list ? toConsoleSpec(data, args.l) : toConsoleCurr(data);
+  if (argsKeys.includes("f")) {
+    toggleFav(args.l);
+  }
+  if (argsKeys.includes("l")) {
+    writeToHistory(args.l + "\n");
+  }
   return data;
 };
 
@@ -31,13 +45,13 @@ const toFetchArgs = args => {
   } else {
     args.units = "imperial";
   }
-  if(args.l.includes(',')) {
-    args.l = args.l.split(',');
+  if (args.l && args.l.includes(",")) {
+    args.l = args.l.split(",");
   }
   return args;
 };
 
-const toConsoleCurr = (data) => {
+const toConsoleCurr = data => {
   const { name, weather, main, wind, sys, dt } = data;
   const status = weather[0].main;
   let { temp } = main;
@@ -48,18 +62,22 @@ const toConsoleCurr = (data) => {
   console.log(`Status: ${status}`);
   console.log(`Temperature: ${temp}`);
   console.log(`Wind speed: ${speed}`);
-  writeToHistory(name + '\n')
 };
 
 const toConsoleSpec = ({ list }, location) => {
   list.forEach(elem => (elem.dt = new Date(elem.dt * 1000)));
   list = list.filter(elem => !(list.indexOf(elem) % 9));
-  console.log(`------------------------`)
-  console.log(`Day | Temp | Wind Speed `)
-  console.log(`------------------------`)
-  list.forEach(elem => console.log(`${days[elem.dt.getDay()].slice(0,3)} |  ${Math.floor(elem.main.temp)}  |      ${Math.floor(elem.wind.speed)}`));
-  console.log(`------------------------`)
-  writeToHistory(location + '\n');
+  console.log(`------------------------`);
+  console.log(`Day | Temp | Wind Speed `);
+  console.log(`------------------------`);
+  list.forEach(elem =>
+    console.log(
+      `${days[elem.dt.getDay()].slice(0, 3)} |  ${Math.floor(
+        elem.main.temp
+      )}  |      ${Math.floor(elem.wind.speed)}`
+    )
+  );
+  console.log(`------------------------`);
 };
 
 main();

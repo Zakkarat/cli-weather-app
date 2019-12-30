@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const writeToHistory = (location) => {
+const writeToHistory = location => {
   fs.appendFile("./history.txt", location, err => {
     if (err) {
       return console.log(err);
@@ -9,11 +9,14 @@ const writeToHistory = (location) => {
 };
 
 const readHistory = () => {
-  fs.readFile('./history.txt', (err, data) => {
+  try {
+  return fs.readFileSync("./history.txt", (err, data) => {
     if (err) throw err;
-    console.log(data.toString());
+    return data.toString();
   });
+} catch {
+  console.log('No history yet.');
 }
+};
 
-module.exports = {writeToHistory, readHistory};
-
+module.exports = { writeToHistory, readHistory };

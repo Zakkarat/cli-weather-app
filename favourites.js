@@ -1,7 +1,7 @@
 const fs = require("fs");
 
-const writeToFav = (location) => {
-  fs.appendFile("./favourites.txt", location, err => {
+const writeToFav = location => {
+  fs.writeFile("./favourites.txt", location.join("\n"), err => {
     if (err) {
       return console.log(err);
     }
@@ -9,16 +9,26 @@ const writeToFav = (location) => {
 };
 
 const readFav = () => {
-  return fs.readFile('./favourites.txt', (err, data) => {
+  try {
+  return fs.readFileSync("./favourites.txt", (err, data) => {
     if (err) throw err;
-    return data.toString();
+    return data;
   });
+} catch {
+  return '';
 }
+};
 
-const addToFav = (loc) => {
-  const data = readFav();
+const toggleFav = loc => {
+  const data = readFav().toString()
+    .split("\n")
+    .map(elem => elem.toLowerCase());
+  if (!data.includes(loc)) {
+    data.push(loc);
+  } else {
+    data.splice(data.indexOf(loc), 1);
+  }
+  writeToFav(data);
+};
 
-}
-
-module.exports = {addToFav, removeFromFav};
-
+module.exports = { toggleFav, readFav };
